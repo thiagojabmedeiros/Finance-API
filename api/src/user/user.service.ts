@@ -14,12 +14,11 @@ export class UserService {
                 role: true
             }
         })
-        if (!users) {
+        if (users.length === 0) {
             throw new NotFoundException("List of users is empty.")
         }
         return users
     }
-
     async createUser(dto: CreateUserDto) {
         try {
             return await this.prisma.user.create({ 
