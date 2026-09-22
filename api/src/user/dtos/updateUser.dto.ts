@@ -1,20 +1,11 @@
-import { IsEmail, IsEnum, IsString, MaxLength, MinLength } from "class-validator"
+import { IsEmail, IsEnum, IsOptional, IsString, MaxLength, MinLength } from "class-validator"
 import { Role } from "../../generated/prisma/enums"
+import { PartialType } from "@nestjs/mapped-types"
+import { CreateUserDto } from "./createUser.dto"
 
-export class UpdateUserDto {
-    @IsString()
-    @MinLength(3)
-    @MaxLength(20)
-    username: string
 
-    @IsEmail()
-    email: string
-
-    @IsString()
-    @MinLength(8)
-    @MaxLength(25)
-    password: string
-
+export class UpdateUserDto extends PartialType(CreateUserDto) {
     @IsEnum(Role)
-    role: string
+    @IsOptional()
+    role: Role
 }

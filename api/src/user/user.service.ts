@@ -1,7 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dtos';
 import { Prisma } from '../generated/prisma/client';
+import { UpdateUserDto } from './dtos/updateUser.dto';
 
 @Injectable()
 export class UserService {
@@ -28,6 +29,32 @@ export class UserService {
                 }
             }
             throw error
+        }
+    }
+    async updateUser(id: string, dto: UpdateUserDto) {
+        try {
+            return await this.prisma.user.update({
+                where: {
+                    id: id
+                },
+                data: dto,
+                select: {
+                    id: true,
+                    role: true,
+                    email: true,
+                    username: true,
+                    updatedAt: true
+                }
+            })
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                if (error.code === "P2002") {
+                    throw new ConflictException("This email has been already used.")
+                }
+                if (error.code === "P2025") {
+                    throw new NotFoundException("User not found")
+                }
+            }
         }
     }
 }
