@@ -7,6 +7,19 @@ import { UpdateUserDto } from './dtos/updateUser.dto';
 @Injectable()
 export class UserService {
     constructor(private readonly prisma: PrismaService) {}
+    async findAll() {
+        const users = await this.prisma.user.findMany({
+            select: {
+                username: true,
+                role: true
+            }
+        })
+        if (!users) {
+            throw new NotFoundException("List of users is empty.")
+        }
+        return users
+    }
+
     async createUser(dto: CreateUserDto) {
         try {
             return await this.prisma.user.create({ 
