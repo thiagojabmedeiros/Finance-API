@@ -12,6 +12,11 @@ export class UserController {
         return this.userService.findAll()
     }
 
+    @Get(':id')
+    listOne(@Param('id') id: string) {
+        return this.userService.findOne(id)
+    }
+
     @Post()
     create(@Body() dto: CreateUserDto) {
         return this.userService.createUser(dto)

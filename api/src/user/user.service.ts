@@ -7,6 +7,24 @@ import { UpdateUserDto } from './dtos/updateUser.dto';
 @Injectable()
 export class UserService {
     constructor(private readonly prisma: PrismaService) {}
+    async findOne(id: string) {
+        const user = this.prisma.user.findFirst({
+            where: {
+                id: id
+            },
+            select: {
+                id: true,
+                role: true,
+                email: true,
+                username: true,
+                createdAt: true
+            }
+        })
+        if (!user) {
+            throw new NotFoundException("This user was not found.")
+        }
+        return user
+    }
     async findAll() {
         const users = await this.prisma.user.findMany({
             select: {
@@ -64,7 +82,7 @@ export class UserService {
                     throw new ConflictException("This email has been already used.")
                 }
                 if (error.code === "P2025") {
-                    throw new NotFoundException("User not found")
+                    throw new NotFoundException("This user was not found.")
                 }
             }
         }
